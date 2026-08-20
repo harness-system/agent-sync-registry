@@ -1,0 +1,40 @@
+name: Validate registry
+
+on:
+  push:
+    paths:
+      - 'registry/**'
+      - '.github/workflows/validate-registry.yml'
+  pull_request:
+    paths:
+      - 'registry/**'
+      - '.github/workflows/validate-registry.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/checkout@v4
+        with:
+          repository: SanAdreas14745/agent-sync
+          path: agent-sync
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: agent-sync/package-lock.json
+
+      - run: npm ci
+        working-directory: agent-sync
+
+      - run: npm run build
+        working-directory: agent-sync
+
+      - run: |
+          node -e "const api = require('./agent-sync/dist'); const result = new api.FileRegistryProvider('./registry').readRegistry(); const review = api.reviewRegistryMaterials(result.materials); const issues = [...result.issues, ...review.issues]; console.log('Registry materials checked: ' + review.materialsChecked); for (const issue of issues) console.log(issue.severity + ': ' + issue.code + ': ' + issue.message); if (issues.some((issue) => issue.severity === 'error')) process.exit(1);"

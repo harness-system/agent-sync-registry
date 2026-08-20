@@ -8,9 +8,9 @@ loadMode: project
 status: active
 category: frontend
 severity: recommended
-version: 1
+version: 2
 owner: frontend
-updatedAt: 2026-07-09
+updatedAt: 2026-08-17
 appliesTo:
   agents: ["codex", "claude-code", "cursor", "github-copilot"]
   technologies: ["angular"]
@@ -26,6 +26,8 @@ appliesTo:
 - Предпочитай `inject()` для Angular DI вместо constructor injection.
 - Если legacy constructor остается, не добавляй в него initialization effects или method calls.
 - Инициализируй Angular effects по паттерну: lifecycle hook содержит только вызов class method, а этот method создает `effect(...)` с `inject(Injector)`.
+- Если значение полностью и синхронно вычисляется из одного или нескольких Angular signals, предпочитай `computed()` простому getter-методу или вызову функции в шаблоне.
+- Используй getter-метод только если вычисление не является реактивным производным состоянием, требует параметров или выполняет действие помимо получения значения.
 - Называй custom Angular output events с префиксом `$` и суффиксом `Event`, например `$closeEvent` или `$submitEvent`.
 - Называй обработчики пользовательских действий с префиксом `on`, например `onButtonClick`, `onSave`, `onCloseClick`.
 - Не пиши `standalone: true` в Angular `@Component`; это значение по умолчанию.
